@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:rich="http://richfaces.org/rich"
+	xmlns:a4j="http://richfaces.org/a4j"
+>
+ 
+<h:head/>
+<body>
+    <h2>Users list view</h2>
+    <h:form id="userForm">
+		<rich:dataTable value="#{inscribeUserBean.usersList}" var="user" id="userTable" name="userTable" rows="2">
+				<f:facet name="noData">
+               		Nothing found
+            	</f:facet>
+	            <rich:column id="id">
+	                <f:facet name="header">
+						Id
+					</f:facet>
+	                <h:outputText value="#{user.id}" />
+	            </rich:column>
+	            <rich:column sortBy="#{user.name}" id="name">
+	                <f:facet name="header">
+	           		    Name
+					</f:facet>
+	                <h:outputText value="#{user.name}" />
+	            </rich:column>	
+	            <rich:column id="adress">
+	                <f:facet name="header">
+	                	Adress
+	                </f:facet>
+	                <h:outputText value="#{user.adress}" />
+	            </rich:column>
+	            <rich:column>
+	                <a4j:commandLink styleClass="no-decor" execute="@this" render="@none"
+	                    oncomplete="#{rich:component('confirmPane')}.show()">
+	                    <h:graphicImage value="/img/delete.png" alt="delete" />
+	                    <f:setPropertyActionListener value="#{user}" target="#{inscribeUserBean.editedUser}"/>
+	                </a4j:commandLink>
+	               	<a4j:commandLink styleClass="no-decor" render="editGrid" execute="@this"
+	                    oncomplete="#{rich:component('editPane')}.show()" resetValues="true">
+	                    <h:graphicImage value="/img/edit.png" alt="edit" />
+	                    <f:setPropertyActionListener  value="#{user}" target="#{inscribeUserBean.editedUser}" />
+	                </a4j:commandLink> 
+          		</rich:column>
+	            <f:facet name="footer">
+	                <rich:dataScroller />
+	            </f:facet>
+	     </rich:dataTable>
+	     
+	     <!-- Modal form  -->
+	     <a4j:jsFunction name="remove" action="#{inscribeUserBean.remove}" render="userTable" execute="@this"
+            oncomplete="#{rich:component('confirmPane')}.hide();" />
+ 
+        <rich:popupPanel id="statPane" autosized="true">
+            <h:graphicImage value="/img/ai.gif" alt="ai" />
+            Please wait...
+        </rich:popupPanel>
+ 
+        <rich:popupPanel id="confirmPane" autosized="true">
+            Are you sure you want to delete this user?
+            <a4j:commandButton value="Cancel" onclick="#{rich:component('confirmPane')}.hide(); return false;" />
+            <a4j:commandButton value="Delete" onclick="remove(); return false;" />
+        </rich:popupPanel>
+ 
+         <rich:popupPanel header="Edit user informations" id="editPane" domElementAttachment="parent" width="400" height="170">
+            <h:panelGrid columns="3" id="editGrid">
+                <h:outputText value="name" />
+                <h:inputText value="#{inscribeUserBean.editedUser.name}" />
+                <h:panelGroup />
+                <h:outputText value="adress" />
+                <h:inputText value="#{inscribeUserBean.editedUser.adress}" />
+                <h:panelGroup />
+                <h:outputText value="password" />
+                <h:outputText value="#{inscribeUserBean.editedUser.password}" />
+                <h:panelGroup />
+            </h:panelGrid>
+            <a4j:commandButton value="Update" action="#{inscribeUserBean.update}" render="userTable" execute="editPane"
+                oncomplete="if (#{facesContext.maximumSeverity==null}) {#{rich:component('editPane')}.hide();}" />
+            <a4j:commandButton value="Cancel" onclick="#{rich:component('editPane')}.hide(); return false;" />
+        </rich:popupPanel>
+     </h:form>
+</body>
+</html>
